@@ -15,11 +15,17 @@ class OfficiumMiddleware(object):
 
         officium = None
 
-        try:
-            officium_site = OfficiumSite.objects.get(url__icontains=getattr(settings, 'OFFICIUM_SITE', None))
-            officium = officium_site.officium
+        # first try default test or default officium in settings.py
+        officium_setting = getattr(settings, 'OFFICIUM_SITE', None)
 
-        except OfficiumSite.DoesNotExist:
+        if officium_setting:
+            try:
+                officium_site = OfficiumSite.objects.get(url__icontains=officium_setting)
+                officium = officium_site.officium
+            except OfficiumSite.DoesNotExist:
+                pass
+
+        else:
             http_host = request.META.get('HTTP_HOST', '').split(':')[0]
             request_domain = unicode(http_host)
 
