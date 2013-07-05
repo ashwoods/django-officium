@@ -3,17 +3,17 @@
 from django.contrib import admin
 from .models import *
 
-class ApplicationModuleAdmin(admin.ModelAdmin):
+class OfficiumSiteInline(admin.StackedInline):
+    model = OfficiumSite
+
+class OfficiumAdmin(admin.ModelAdmin):
+    inlines = [OfficiumSiteInline]
+
+class OfficiumUserAdmin(admin.ModelAdmin):
     pass
 
 
-class ApplicationThemeAdmin(admin.TabularInline):
-    model = ApplicationTheme
+admin.site.register(OfficiumUser, OfficiumUserAdmin)
+admin.site.register(Officium, OfficiumAdmin)
 
 
-class ApplicationProfileAdmin(admin.ModelAdmin):
-    inlines = (ApplicationThemeAdmin,)
-
-
-admin.site.register(ApplicationFeature, ApplicationModuleAdmin)
-admin.site.register(ApplicationProfile, ApplicationProfileAdmin)

@@ -1,36 +1,46 @@
 # -*- coding: utf-8 -*-
+from urlparse import urlsplit
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
-from .models import ApplicationProfile
+from .models import Officium, OfficiumUser, OfficiumSite
 import warnings
+
 
 class OfficiumMiddleware(object):
     """
-    Branding for awards. Sets MITTO_MIDDELWARE_AWARD.
+    Officium Site Middleware allows you to have independent sites depending on the request url
     """
     def process_request(self, request):
-        """
-        Branding middleware for awards
-        """
 
-        # allows to set the application profile via environment variable or settings
+        officium = None
 
-        ENV_APP = getattr(settings, 'OFFICIUM_APPLICATION_PROFILE', None)
+        try:
+            officium_site = OfficiumSite.objects.get(url__icontains=getattr(settings, 'OFFICIUM_SITE', None))
+            officium = officium_site.officium
 
-        if ENV_APP:
-            request.OFFICIUM_MIDDLEWARE_PROFILE = ApplicationProfile.objects.get(name=ENV_APP)
-            return None
-        http_host = request.META.get('HTTP_HOST','').split(':')[0]
-        request_domain = unicode(http_host)
+        except OfficiumSite.DoesNotExist:
+            http_host = request.META.get('HTTP_HOST', '').split(':')[0]
+            request_domain = unicode(http_host)
 
-        if request_domain.startswith('localhost') or request_domain.startswith('127'):
-            host = 'localhost'
-            request.OFFICIUM_MIDDLEWARE_PROFILE = None
-        else:
+            if request_domain.startswith('localhost') or request_domain.startswith('127'):
+                request.OFFICIUM = None
+
+            else:
+                try:
+                    officium_site = OfficiumSite.objects.get(url__icontains=request_domain)
+                    officium = officium_site.officium
+                except OfficiumSite.DoesNotExist:
+                    pass
+
+        if request.user.is_authenticated():
             try:
-                app_profile = ApplicationProfile.objects.get(url__iexact=request_domain) #TODO: Cache this
-            except ApplicationProfile.DoesNotExist:
-                app_profile = None
-            request.OFFICIUM_MIDDLEWARE_PROFILE = app_profile
+                officium_user = OfficiumUser.objects.get(user=request.user, officium=officium)
+            except OfficiumUser.DoesNotExist:
+                officium_user = None
+        else:
+            officium_user = None
+
+        request.OFFICIUM = officium
+        request.OFFICIUM_USER = officium_user
         return None
