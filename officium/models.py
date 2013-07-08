@@ -10,9 +10,16 @@ from djorm_hstore.models import HStoreManager
 from djorm_hstore.fields import DictionaryField
 
 from .conf import settings
+from autoslug.utils import translit_long
 
+
+def slugify(value):
+    return translit_long(value).lower()
 
 user_model_label = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
+
+
+
 
 
 class Officium(TimeStampedModel):
@@ -22,7 +29,7 @@ class Officium(TimeStampedModel):
 
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
-    slug = AutoSlugField(unique=True, populate_from='name')
+    slug = AutoSlugField(unique=True, populate_from='name', slugify=slugify)
 
     def __unicode__(self):
         return 'Officium of %(slug)s' % {'slug': self.slug}
