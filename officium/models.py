@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 
 from model_utils.models import TimeStampedModel
 
@@ -31,8 +31,21 @@ class Officium(TimeStampedModel):
     description = models.TextField(blank=True)
     slug = AutoSlugField(unique=True, populate_from='name', slugify=slugify)
 
+    def get_group(self):
+        try:
+            group = Group.objects.get(name=self.slug)
+        except Group.DoesNotExist:
+            group = None
+        return group
+
+
     def __unicode__(self):
         return 'Officium of %(slug)s' % {'slug': self.slug}
+
+    def save(self, *args, **kwargs):
+        if self.get_group() is None:
+            Group.objects.create(name=self.slug)
+        super(Officium, self).save(*args, **kwargs)
 
 
 class OfficiumSite(TimeStampedModel):
@@ -44,7 +57,11 @@ class OfficiumSite(TimeStampedModel):
     default = models.BooleanField()
     officium = models.ForeignKey(Officium, related_name='sites')
 
+
+
+
     def __unicode__(self):
+
         return 'OfficiumSite for %(officium)s' % {'officium': self.officium.slug}
 
 
