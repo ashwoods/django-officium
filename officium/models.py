@@ -43,9 +43,10 @@ class Officium(TimeStampedModel):
         return 'Officium of %(slug)s' % {'slug': self.slug}
 
     def save(self, *args, **kwargs):
+        super(Officium, self).save(*args, **kwargs)
         if self.get_group() is None:
             Group.objects.create(name=self.slug)
-        super(Officium, self).save(*args, **kwargs)
+
 
 
 class OfficiumSite(TimeStampedModel):
