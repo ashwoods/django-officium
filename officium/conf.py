@@ -9,9 +9,7 @@ gettext = lambda s: s
 
 class OfficiumConf(AppConf):
     DECORATOR_MODULE = None
-    WITHOUT_USERNAMES = True
-    REMEMBER_ME_DAYS = (gettext('a month'), 30)
-    REDIRECT_URL = '/'
+    TRY_SILENTLY = True
 
 if settings.OFFICIUM_DECORATOR_MODULE is None:
     raise ImproperlyConfigured('OFFICIUM_DECORATOR_MODULE not found. Did you set it in settings.py?')

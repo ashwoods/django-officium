@@ -14,8 +14,11 @@ def officium_method(relation, label=None):
         try:
             function = getattr(importlib.import_module('%s.%s' % (settings.OFFICIUM_DECORATOR_MODULE, officium.slug)),
                                officium_label)
-        except (AttributeError, ImportError):
-            pass
+        except (AttributeError, ImportError), e:
+            if settings.OFFICIUM_TRY_SILENTLY:
+                pass
+            else:
+                raise
 
         return function(object, *args, **kwargs)
     return decorator(call)
