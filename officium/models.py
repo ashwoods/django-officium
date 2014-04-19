@@ -55,7 +55,7 @@ class OfficiumSite(TimeStampedModel):
     """
 
     url = models.URLField(max_length=200)
-    default = models.BooleanField()
+    default = models.BooleanField(default=False)
     officium = models.ForeignKey(Officium, related_name='sites')
 
 
@@ -73,7 +73,7 @@ class OfficiumUser(TimeStampedModel):
 
     officium = models.ForeignKey(Officium, related_name='users')
     user = models.ForeignKey(user_model_label)
-    is_manager = models.BooleanField()
+    is_manager = models.BooleanField(default=False)
 
     last_login = models.DateTimeField(null=True)
     profile_data = DictionaryField(db_index=True, null=True, blank=True)
