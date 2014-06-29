@@ -76,7 +76,7 @@ class OfficiumUser(TimeStampedModel):
     is_manager = models.BooleanField(default=False)
 
     last_login = models.DateTimeField(null=True)
-    profile_data = DictionaryField(db_index=True, null=True, blank=True)
+    profile_data = DictionaryField(db_index=False, null=True, blank=True)
 
     objects = HStoreManager()
 
