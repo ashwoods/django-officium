@@ -13,6 +13,9 @@ class OfficiumMiddleware(object):
     """
     def process_request(self, request):
 
+        if request.path.startswith('/api/'):
+            return None
+
         officium = None
 
         # first try default test or default officium in settings.py
