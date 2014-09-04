@@ -13,7 +13,7 @@ class OfficiumMiddleware(object):
     """
     def process_request(self, request):
 
-        if request.path.startswith('/api/'):
+        if request.path.startswith(settings.OFFICIUM_IGNORE_PATHS):
             return None
 
         officium = None
