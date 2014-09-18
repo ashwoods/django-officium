@@ -45,7 +45,7 @@ class OfficiumMiddleware(object):
         if request.user.is_authenticated():
             try:
                 officium_user = OfficiumUser.objects.get(user=request.user, officium=officium)
-            except OfficiumUser.DoesNotExist:
+            except:
                 officium_user = None
         else:
             officium_user = None
