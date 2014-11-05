@@ -23,7 +23,7 @@ class OfficiumMiddleware(object):
 
         if officium_setting:
             try:
-                officium_site = OfficiumSite.objects.get(url__icontains=officium_setting)
+                officium_site = OfficiumSite.objects.get(url__iexact=officium_setting)
                 officium = officium_site.officium
             except OfficiumSite.DoesNotExist:
                 pass
